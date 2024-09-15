@@ -4,7 +4,7 @@ class Lexer:
         Initializes the lexer with the input text.
         Sets the initial position and current character.
         """
-        pass
+        self.text = text
 
     def error(self):
         """
