@@ -5,7 +5,6 @@ class Lexer:
         Sets the initial position and current character.
         """
         self.text = text
-        #pass
 
     def error(self):
         """
