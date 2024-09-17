@@ -52,15 +52,20 @@ class Lexer:
             if self.current_char == '/':
                 self.advance()
                 return ('DIVIDE', '/')
+            #token '='
             if self.current_char == '=':
                 self.advance()
                 return ('ASSIGN', '=')
+            #check invalid character
             self.error()
         return ('EOF', None)
 
-# Example usage
-lexer = Lexer('a = 3')              # 1. Initialize the lexer with the input string
-token = lexer.get_next_token()      # 2. Get the first token from the lexer
-while token[0] != 'EOF':            # 3. Loop until the end of the input is reached
-    print(token)                    # 4. Print the current token
-    token = lexer.get_next_token()  # 5. Get the next token
+def main():
+    # Example usage
+    lexer = Lexer('a = 3')              # 1. Initialize the lexer with the input string
+    token = lexer.get_next_token()      # 2. Get the first token from the lexer
+    while token[0] != 'EOF':            # 3. Loop until the end of the input is reached
+        print(token)                    # 4. Print the current token
+        token = lexer.get_next_token()  # 5. Get the next token
+    
+main()
