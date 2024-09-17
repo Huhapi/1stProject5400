@@ -5,20 +5,25 @@ class Lexer:
         Sets the initial position and current character.
         """
         self.text = text
+        self.charlist = list(text)
+        self.current_char = self.charlist[0]
+        self.position = 0
+
 
     def error(self):
         """
         Raises an exception for invalid characters encountered
         during tokenization.
         """
-        pass
+        raise Exception("An error has occured.")
 
     def advance(self):
         """
         Advances to the next character in the input text.
         Updates the current character to the new position.
         """
-        pass
+        self.position = self.position+1
+        self.current_char = self.charlist[self.position]
 
     def get_next_token(self):
         """
