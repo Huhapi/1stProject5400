@@ -8,7 +8,7 @@ class Lexer:
         self.charlist = list(text)
         self.current_char = self.charlist[0]
         self.position = 0
-
+        print(len(self.charlist))
 
     def error(self):
         """
@@ -23,7 +23,10 @@ class Lexer:
         Updates the current character to the new position.
         """
         self.position = self.position+1
-        self.current_char = self.charlist[self.position]
+        if self.position >= len(self.charlist):
+            self.current_char = None
+        else: 
+            self.current_char = self.charlist[self.position]
 
     def get_next_token(self):
         """
@@ -35,7 +38,12 @@ class Lexer:
             #whitespace to be ignored
             if self.current_char.isspace():
                 self.advance()
-                continue
+                return ('SPACE', ' ')
+                #continue
+            #token 'variable'
+            if self.current_char.isalpha():
+                self.advance()
+                return ('LETTER', self)
             #token 'int'
             if self.current_char.isdigit():
                 self.advance()
