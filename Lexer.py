@@ -28,9 +28,30 @@ class Lexer:
         - 'EOF' when the end of the text is reached
         """
         while self.current_char is not None:
+            #whitespace to be ignored
             if self.current_char.isspace():
                 self.advance()
                 continue
+            #token 'int'
+            if self.current_char.isdigit():
+                self.advance()
+                return ('VALUE', self)
+            #token '+'
+            if self.current_char == '+':
+                self.advance()
+                return ('ADD', '+')
+            #token '-'
+            if self.current_char == '-':
+                self.advance()
+                return ('SUBTRACT', '-')
+            #token '*'
+            if self.current_char == '*':
+                self.advance()
+                return ('MULTIPLY', '*')
+            #token '/'
+            if self.current_char == '/':
+                self.advance()
+                return ('DIVIDE', '/')
             if self.current_char == '=':
                 self.advance()
                 return ('ASSIGN', '=')
