@@ -1,2 +1,4 @@
 # 1stProject5400
-Creating a programming language.
+Project01: Lexical analysis of arithmetic operators  <br>
+
+Group members: Daniel Hayes and Sarah Crane  <br>
