@@ -1,4 +1,13 @@
+"""
+Project01 - CS5400
+Group Members: Daniel Hayes and Sarah Crane
+Semptember 18, 2024
+"""
 class Lexer:
+    """
+    Class Lexer
+    Processes input strings and produces tokens
+    """
     def __init__(self, text):
         """
         Initializes the lexer with the input text.
@@ -20,7 +29,6 @@ class Lexer:
         Raises an exception for invalid characters encountered
         during tokenization.
         """
-        
         if(a == 0):
             raise Exception("General error code.")
         if(a == 1):
@@ -35,7 +43,6 @@ class Lexer:
         Advances to the next character in the input text.
         Updates the current character to the new position.
         """
-
         self.position = self.position+1
         if self.position >= len(self.charlist):
             self.current_char = None
@@ -48,9 +55,7 @@ class Lexer:
         - 'ASSIGN' for the '=' character
         - 'EOF' when the end of the text is reached
         """
-        while self.current_char is not None:
-            
-            
+        while self.current_char is not None: #starts loop to tokenize each component
             #token 'variable'
             if self.current_char.isalpha():
                 if self.is_number:
@@ -64,6 +69,7 @@ class Lexer:
                 if (self.is_alpha):
                     self.is_alpha = False
                     return ('VARIABLE', self.current_token)
+            
             #token 'int or decimal'
             if (self.current_char.isdigit() or self.current_char == '.'):
                 if not self.past_assign_op:
@@ -76,8 +82,7 @@ class Lexer:
                     self.current_token = self.current_char
                     self.is_number = True
                     if(self.current_char == '.'):
-                        self.error(1)
-                
+                        self.error(1)  
             else:
                 if(self.is_number):
                     if(self.period_counter < 2):
@@ -93,27 +98,33 @@ class Lexer:
                 self.advance()
                 return ('SPACE', ' ')
                 #continue
+            
             #token '+'
             if self.current_char == '+':
                 self.advance()
                 return ('ADD', '+')
+            
             #token '-'
             if self.current_char == '-':
                 self.advance()
                 return ('SUBTRACT', '-')
+            
             #token '*'
             if self.current_char == '*':
                 self.advance()
                 return ('MULTIPLY', '*')
+            
             #token '/'
             if self.current_char == '/':
                 self.advance()
                 return ('DIVIDE', '/')
+            
             #token '='
             if self.current_char == '=':
                 self.advance()
                 self.past_assign_op = True
                 return ('ASSIGN', '=')
+            
             #check invalid character
             if not (self.is_alpha or self.is_number):
                 print(self.is_alpha)
@@ -131,8 +142,6 @@ class Lexer:
             return ('VALUE', self.current_token)
         return ('EOF', None)
 
-
-
 def runlexer(file_in):
     lexer = Lexer(file_in)              # 1. Initialize the lexer with the input string
     token = lexer.get_next_token()      # 2. Get the first token from the lexer
@@ -142,6 +151,10 @@ def runlexer(file_in):
         token = lexer.get_next_token()  # 5. Get the next token
     return tokens                       # return results
 
+"""
+Test Cases
+Includes various arithmetic expressions to test lexer and correctly identify and tokenize each component
+"""
 def testalpha():
     testfile1 = runlexer("betrius = 2 + 3 / 4 * 5") # multiple letters and multiple math signs
     successes = 0
@@ -158,14 +171,15 @@ def testalpha():
     print(testfile3)
     if(testfile3 == "[SPACE][ ][VARIABLE][celcius][SPACE][ ][ASSIGN][=][SPACE][ ][VALUE][257][SPACE][ ][ADD][+][SPACE][ ][VALUE][2][SPACE][ ]"):
         successes +=1
+        
     """
         testfile4 = runlexer("c = 2 + betrius")
     successes = 0
     if(testfile4 == ""):
         successes +=1
-
     """
-        testfile5 = runlexer("a=1+1") #testing add, no spaces
+    
+    testfile5 = runlexer("a=1+1") #testing add, no spaces
     print(testfile5)
     if(testfile5 == "[VARIABLE][a][ASSIGN][=][VALUE][1][ADD][+][VALUE][1]"):
         successes +=1
@@ -195,10 +209,11 @@ def testalpha():
     if(testfile10 == "[VARIABLE][e][ASSIGN][=][VALUE][100000][SPACE][ ][VALUE][00000][DIVIDE][/][VALUE][1000]"):
         successes +=1  
 
-    return successes
+    return successes #returns total number of successfully run tests
     
 def main():
     # Example usage
     x = testalpha()
     print(x)
+    
 main()
