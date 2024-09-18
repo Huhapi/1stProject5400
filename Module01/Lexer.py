@@ -207,6 +207,6 @@ def testalpha():
 def main():
     # Example usage
     x = testalpha()
-    print(x+" out of 8.")
+    print(str(x)+" out of 8.")
     
 main()
