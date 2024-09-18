@@ -165,6 +165,36 @@ def testalpha():
         successes +=1
 
     """
+        testfile5 = runlexer("a=1+1") #testing add, no spaces
+    print(testfile5)
+    if(testfile5 == "[VARIABLE][a][ASSIGN][=][VALUE][1][ADD][+][VALUE][1]"):
+        successes +=1
+
+    testfile6 = runlexer("b=2-1") #testing subtract, no spaces
+    print(testfile6)
+    if(testfile6 == "[VARIABLE][b][ASSIGN][=][VALUE][2][SUBTRACT][-][VALUE][1]"):
+        successes +=1
+
+    testfile7 = runlexer("c=1*1") #testing multiply, no spaces
+    print(testfile7)
+    if(testfile7 == "[VARIABLE][c][ASSIGN][=][VALUE][1][MULTIPLY][*][VALUE][1]"):
+        successes +=1
+
+    testfile8 = runlexer("d=4/2") #testing divide, no spaces
+    print(testfile8)
+    if(testfile8 == "[VARIABLE][d][ASSIGN][=][VALUE][4][DIVIDE][/][VALUE][2]"):
+        successes +=1
+
+    testfile9 = runlexer("e=10000000000/1000") #testing large values, no spaces
+    print(testfile9)
+    if(testfile9 == "[VARIABLE][e][ASSIGN][=][VALUE][10000000000][DIVIDE][/][VALUE][1000]"):
+        successes +=1
+
+    testfile10 = runlexer("e=100000 00000/1000") #testing large values, with space in value
+    print(testfile10)
+    if(testfile10 == "[VARIABLE][e][ASSIGN][=][VALUE][100000][SPACE][ ][VALUE][00000][DIVIDE][/][VALUE][1000]"):
+        successes +=1  
+
     return successes
     
 def main():
