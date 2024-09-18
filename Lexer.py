@@ -5,23 +5,37 @@ class Lexer:
         Sets the initial position and current character.
         """
         self.text = text
-        self.charlist = list(text)
-        self.current_char = self.charlist[0]
-        self.position = 0
-        print(len(self.charlist))
+        self.charlist = list(text)  # Creates list of chars out of String input
+        self.current_char = self.charlist[0]    # Stores current char
+        self.position = 0       # Stores int position in char list
+        self.current_token = "" # Stores String of current token
+        self.period_counter = 0 # Counts periods in numbers (cannot have more than 1)
+        self.is_alpha = False   # Currently reading variable boolean - is True if going through variable
+        self.is_number = False  # Currently reading numerical boolean - is True is going through number
+        self.last_token_type = None # Stores previous token type for potential error handling
+        self.past_assign_op = False # Stores whether or not past = sign
 
-    def error(self):
+    def error(self,a):
         """
         Raises an exception for invalid characters encountered
         during tokenization.
         """
-        raise Exception("An error has occured.")
+        
+        if(a == 0):
+            raise Exception("General error code.")
+        if(a == 1):
+            raise Exception("There must be a number before a '.'.")
+        if(a == 2):
+            raise Exception("There can only be one '.' in a number.")
+        if(a == 3):
+            raise Exception("Cannot have a number value prior to assignment operator.")
 
     def advance(self):
         """
         Advances to the next character in the input text.
         Updates the current character to the new position.
         """
+
         self.position = self.position+1
         if self.position >= len(self.charlist):
             self.current_char = None
@@ -35,19 +49,50 @@ class Lexer:
         - 'EOF' when the end of the text is reached
         """
         while self.current_char is not None:
+            
+            
+            #token 'variable'
+            if self.current_char.isalpha():
+                if self.is_number:
+                    self.error(0)
+                if self.is_alpha:   # determines if continuing variable or new variable
+                    self.current_token += self.current_char
+                else:
+                    self.is_alpha = True
+                    self.current_token = self.current_char
+            else:
+                if (self.is_alpha):
+                    self.is_alpha = False
+                    return ('VARIABLE', self.current_token)
+            #token 'int or decimal'
+            if (self.current_char.isdigit() or self.current_char == '.'):
+                if not self.past_assign_op:
+                    self.error(3)
+                if self.is_number: # Determines if continueing number or new number.
+                    self.current_token += self.current_char
+                    if(self.current_char == '.'):
+                        self.period_counter +=1
+                else:
+                    self.current_token = self.current_char
+                    self.is_number = True
+                    if(self.current_char == '.'):
+                        self.error(1)
+                
+            else:
+                if(self.is_number):
+                    if(self.period_counter < 2):
+                        self.period_counter = 0
+                        self.is_number = False
+                        return ('VALUE', self.current_token)
+                    else:
+                        self.error(2)
+                    self.is_number = False
+                    
             #whitespace to be ignored
             if self.current_char.isspace():
                 self.advance()
                 return ('SPACE', ' ')
                 #continue
-            #token 'variable'
-            if self.current_char.isalpha():
-                self.advance()
-                return ('LETTER', self)
-            #token 'int'
-            if self.current_char.isdigit():
-                self.advance()
-                return ('VALUE', self)
             #token '+'
             if self.current_char == '+':
                 self.advance()
@@ -67,17 +112,63 @@ class Lexer:
             #token '='
             if self.current_char == '=':
                 self.advance()
+                self.past_assign_op = True
                 return ('ASSIGN', '=')
             #check invalid character
-            self.error()
+            if not (self.is_alpha or self.is_number):
+                print(self.is_alpha)
+                self.error(0)
+
+            self.advance() # advancing for number and variables (done after alternate checks)
+
+        # If end of file is reached and number or variable has not been returned
+        # Return them before ending file.
+        if(self.is_alpha):
+            self.is_alpha = False
+            return ('VARIABLE', self.current_token)
+        if(self.is_number):
+            self.is_number = False
+            return ('VALUE', self.current_token)
         return ('EOF', None)
 
+
+
+def runlexer(file_in):
+    lexer = Lexer(file_in)              # 1. Initialize the lexer with the input string
+    token = lexer.get_next_token()      # 2. Get the first token from the lexer
+    tokens = ""                         # For testing get output in string instead of print line
+    while token[0] != 'EOF':            # 3. Loop until the end of the input is reached
+        tokens += "["+token[0]+"]"+"["+token[1]+"]"                    # 4. save the current tokens
+        token = lexer.get_next_token()  # 5. Get the next token
+    return tokens                       # return results
+
+def testalpha():
+    testfile1 = runlexer("betrius = 2 + 3 / 4 * 5") # multiple letters and multiple math signs
+    successes = 0
+    if(testfile1 == "[VARIABLE][betrius][SPACE][ ][ASSIGN][=][SPACE][ ][VALUE][2][SPACE][ ][ADD][+][SPACE][ ][VALUE][3][SPACE][ ][DIVIDE][/][SPACE][ ][VALUE][4][SPACE][ ][MULTIPLY][*][SPACE][ ][VALUE][5]"):
+        successes +=1
+
+    #testfile2 = runlexer(" 2letrius = 2 + 3 / 4 * 5") # Starting with a number prior to =
+    #successes = 0
+    #if(testfile2 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Cannot have a number value prior to assignment operator.")
+
+    testfile3 = runlexer(" celcius = 257 + 2 ") # starting and ending with spaces
+    print(testfile3)
+    if(testfile3 == "[SPACE][ ][VARIABLE][celcius][SPACE][ ][ASSIGN][=][SPACE][ ][VALUE][257][SPACE][ ][ADD][+][SPACE][ ][VALUE][2][SPACE][ ]"):
+        successes +=1
+    """
+        testfile4 = runlexer("c = 2 + betrius")
+    successes = 0
+    if(testfile4 == ""):
+        successes +=1
+
+    """
+    return successes
+    
 def main():
     # Example usage
-    lexer = Lexer('a = 3')              # 1. Initialize the lexer with the input string
-    token = lexer.get_next_token()      # 2. Get the first token from the lexer
-    while token[0] != 'EOF':            # 3. Loop until the end of the input is reached
-        print(token)                    # 4. Print the current token
-        token = lexer.get_next_token()  # 5. Get the next token
-    
+    x = testalpha()
+    print(x)
 main()
