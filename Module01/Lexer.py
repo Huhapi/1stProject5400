@@ -30,13 +30,15 @@ class Lexer:
         during tokenization.
         """
         if(a == 0):
-            raise Exception("General error code.")
+            raise Exception("Invalid characters present.")
         if(a == 1):
             raise Exception("There must be a number before a '.'.")
         if(a == 2):
             raise Exception("There can only be one '.' in a number.")
         if(a == 3):
             raise Exception("Cannot have a number value prior to assignment operator.")
+        if(a == 4):
+            raise Exception("Cannot have an arithmetic expression prior to assignment operator.")
 
     def advance(self):
         """
@@ -101,21 +103,29 @@ class Lexer:
             
             #token '+'
             if self.current_char == '+':
+                if not self.past_assign_op:
+                    self.error(4)
                 self.advance()
                 return ('ADD', '+')
             
             #token '-'
             if self.current_char == '-':
+                if not self.past_assign_op:
+                    self.error(4)
                 self.advance()
                 return ('SUBTRACT', '-')
             
             #token '*'
             if self.current_char == '*':
+                if not self.past_assign_op:
+                    self.error(4)
                 self.advance()
                 return ('MULTIPLY', '*')
             
             #token '/'
             if self.current_char == '/':
+                if not self.past_assign_op:
+                    self.error(4)
                 self.advance()
                 return ('DIVIDE', '/')
             
@@ -127,7 +137,6 @@ class Lexer:
             
             #check invalid character
             if not (self.is_alpha or self.is_number):
-                print(self.is_alpha)
                 self.error(0)
 
             self.advance() # advancing for number and variables (done after alternate checks)
@@ -201,6 +210,70 @@ def testalpha():
     print(testfile9)
     if(testfile9 == "[VARIABLE][e][ASSIGN][=][VALUE][100000][SPACE][ ][VALUE][00000][DIVIDE][/][VALUE][1000]"):
         successes +=1  
+
+    #-------------- More Error Testing --------------#
+    # Testing divide prior to assignment operator.
+    #testfile10 = runlexer("a/2 = 2 + 3 / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile10 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Cannot have an arithmetic expression prior to assignment operator.")
+
+    # Testing addition prior to assignment operator.
+    #testfile11 = runlexer("a+2 = 2 + 3 / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile11 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Cannot have an arithmetic expression prior to assignment operator.")
+
+    # Testing subtraction prior to assignment operator.
+    #testfile12 = runlexer("a-2 = 2 + 3 / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile12 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Cannot have an arithmetic expression prior to assignment operator.")
+
+    # Testing multiply prior to assignment operator.
+    #testfile13 = runlexer("a*2 = 2 + 3 / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile13 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Cannot have an arithmetic expression prior to assignment operator.")
+
+    # Testing number starting with a '.'
+    #testfile14 = runlexer("a = .2 + 3 / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile14 == ""):
+    #    successes +=1
+    #This test should: raise Exception("There must be a number before a '.'.")
+
+    # Testing multiple '.'s in a number
+    #testfile15 = runlexer("a = 0.2. + 3 / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile15 == ""):
+    #    successes +=1
+    #This test should: raise Exception("There can only be one '.' in a number.")
+
+    # Testing invalid character with spaces
+    #testfile16 = runlexer("a = 0.2 + $ / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile16 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Invalid characters present.")
+
+    # Testing invalid character next to variable
+    #testfile17 = runlexer("a$ = 0.2 / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile17 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Invalid characters present.")
+
+    # Testing invalid character next to number
+    #testfile18 = runlexer("a = 0.2@ / 4 * 5") # Testing divide
+    #successes = 0
+    #if(testfile18 == ""):
+    #    successes +=1
+    #This test should: raise Exception("Invalid characters present.")
 
     return successes #returns total number of successfully run tests should be 8.
     
